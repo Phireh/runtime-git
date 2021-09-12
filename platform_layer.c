@@ -298,7 +298,8 @@ int main()
             if (!pid) // we are the child process
             {
                 char command[PATH_MAX];
-                strcpy(command, "-C ");
+                strcpy(command, "--directory=");
+                strcat(command, "./");
                 strcat(command, tempdir);
                 
                 // Redirect output to /dev/null to avoid messing the screen
@@ -306,9 +307,9 @@ int main()
                 dup2(fd, 1);
                 dup2(fd, 2);
                 
-                if (execl("/usr/bin/make", "make", "-s", command, "game", (char*) NULL) == -1)
+                if (execl("/usr/bin/make", "/usr/bin/make", "-s", command, "game", (char*) NULL) == -1)
                 {
-                    //fprintf(stderr, "%s\n", strerror(errno));
+                    fprintf(stderr, "%s\n", strerror(errno));
                     return -1;
                 }
             }

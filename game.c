@@ -141,7 +141,7 @@ GAME_RENDER(game_render)
         
         getyx(g->window, inputcursory, inputcursorx);
         
-        wattrset(g->window, A_BOLD);
+        wattrset(g->window, A_UNDERLINE);
         mvwprintw(g->window, 10, id_xoffset, "ID");
         mvwprintw(g->window, 10, p_xoffset, "P");
         mvwprintw(g->window, 10, g_xoffset, "G");
@@ -149,7 +149,7 @@ GAME_RENDER(game_render)
         mvwprintw(g->window, 10, author_xoffset, "AUTHOR");
         mvwprintw(g->window, 10, date_xoffset, "DATE");
         mvwprintw(g->window, 10, summary_xoffset, "SUMMARY");
-        wattroff(g->window, A_BOLD);
+        wattroff(g->window, A_UNDERLINE);
         int i = 1;
         
         while (commit)
@@ -179,7 +179,7 @@ GAME_RENDER(game_render)
             commit = commit->next;
             ++i;
         }
-        //wborder(g->window, 0, 0, 0, 0, 0, 0, 0, 0);
+        wborder(g->window, 0, 0, 0, 0, 0, 0, 0, 0);
     }    
 }
 
