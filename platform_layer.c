@@ -341,7 +341,11 @@ int main()
             // Actually do the code injection
             char libpath[PATH_MAX] = "./";
             strcat(libpath, tempdir);
-            strcat(libpath, "/game.so");            
+            strcat(libpath, "/game.so");
+
+            game_code.game_update = NULL;
+            game_code.game_reset = NULL;
+            game_code.game_render = NULL;
             
             game_handle = load_functions(&game_code, libpath);
             if (!game_handle)

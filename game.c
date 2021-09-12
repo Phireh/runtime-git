@@ -142,12 +142,8 @@ GAME_RENDER(game_render)
 
         // Print debug info
         mvwprintw(g->window, 7, legend_xoffset, g->debuginfo);
-                
-
         
-
-        
-        wattrset(g->window, A_UNDERLINE);
+        wattrset(g->window, A_BOLD);
         mvwprintw(g->window, 10, id_xoffset, "ID");
         mvwprintw(g->window, 10, p_xoffset, "P");
         mvwprintw(g->window, 10, g_xoffset, "G");
@@ -155,7 +151,7 @@ GAME_RENDER(game_render)
         mvwprintw(g->window, 10, author_xoffset, "AUTHOR");
         mvwprintw(g->window, 10, date_xoffset, "DATE");
         mvwprintw(g->window, 10, summary_xoffset, "SUMMARY");
-        wattroff(g->window, A_UNDERLINE);
+        wattroff(g->window, A_BOLD);
         int i = 1;
         
         while (commit)
