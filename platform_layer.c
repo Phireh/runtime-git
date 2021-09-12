@@ -180,7 +180,7 @@ void *load_functions(game_code_t *code, char *filename)
     library_handle = dlopen(filename, RTLD_NOW);
     if (!library_handle)
     {
-        fprintf(stderr, "Error loading library\n");
+        fprintf(stderr, "Error loading library: %s\n", dlerror());
         return NULL;
     }
     else
