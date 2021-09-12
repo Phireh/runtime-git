@@ -133,14 +133,19 @@ GAME_RENDER(game_render)
         int legend_xoffset = (maxx - sizeof(legend)) / 2;
         mvwprintw(g->window, 5, legend_xoffset, legend);
         mvwprintw(g->window, 5, legend_xoffset + sizeof(legend) + 1, g->inputfield);
+
+        // Save cursor position of input field
+
+        int inputcursory;
+        int inputcursorx;        
+        getyx(g->window, inputcursory, inputcursorx);
+
+        // Print debug info
         mvwprintw(g->window, 7, legend_xoffset, g->debuginfo);
                 
 
         
-        int inputcursory;
-        int inputcursorx;
-        
-        getyx(g->window, inputcursory, inputcursorx);
+
         
         wattrset(g->window, A_UNDERLINE);
         mvwprintw(g->window, 10, id_xoffset, "ID");
