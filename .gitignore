@@ -1,0 +1,6 @@
+# Binaries
+platform_layer
+*.so
+
+# Temporal files
+temp*
