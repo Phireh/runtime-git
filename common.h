@@ -38,6 +38,7 @@ typedef struct {
     game_flags_t flags;    
     uint8_t *board;
     WINDOW *window;
+    char *debuginfo;
 
     git_repository *repo;    
     commit_node_t *commit_list;
@@ -46,7 +47,7 @@ typedef struct {
     git_oid selected_oid;
 
     char inputfield[32];
-    size_t inputn;
+    size_t inputn;    
 } game_state_t;
 
 git_oid empty_oid = { .id = {} };

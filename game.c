@@ -89,7 +89,6 @@ GAME_UPDATE(game_update)
 GAME_RENDER(game_render)
 {
     wclear(g->window);
-    wrefresh(g->window);
             
     if (g->flags & NORMAL)
     {
@@ -134,6 +133,8 @@ GAME_RENDER(game_render)
         int legend_xoffset = (maxx - sizeof(legend)) / 2;
         mvwprintw(g->window, 5, legend_xoffset, legend);
         mvwprintw(g->window, 5, legend_xoffset + sizeof(legend) + 1, g->inputfield);
+        mvwprintw(g->window, 7, legend_xoffset, g->debuginfo);
+                
 
         
         int inputcursory;

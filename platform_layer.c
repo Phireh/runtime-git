@@ -267,7 +267,7 @@ int main()
     
     WINDOW *window_handler = newwin(h, w, 0, 0);
     game_state.window = window_handler;
-    //nodelay(window_handler, TRUE);
+    nodelay(window_handler, TRUE);
 
     // Activate special key capturing (backspace, delete, etc) 
     keypad(window_handler, TRUE);    
@@ -283,10 +283,15 @@ int main()
     // Initiate flags
     game_state.flags = NORMAL;
 
+    char debuginfo[128];
+    game_state.debuginfo = debuginfo;
     
-    /** Input handling **/
+    /** Main loop **/
     for (;;)
     {
+        // Fill debug info
+        snprintf(debuginfo, sizeof(debuginfo), "ADDRESS OF GAME_CODE: %p", game_code.game_render);
+        
         // Check if user wants to load a different commit for the game runtime
         if (memcmp((const void *)&game_state.selected_oid, (const void *)&empty_oid, GIT_OID_RAWSZ))
         {
@@ -353,8 +358,7 @@ int main()
         switch (ch)
         {
         case ERR:
-            usleep(33);
-            game_code.game_update(&game_state);
+            usleep(1000*33);
             game_code.game_render(&game_state);
             break;
         case 'q':
