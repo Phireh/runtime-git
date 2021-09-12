@@ -141,7 +141,7 @@ GAME_RENDER(game_render)
         
         getyx(g->window, inputcursory, inputcursorx);
         
-        wattron(g->window, A_BOLD);
+        wattrset(g->window, A_BOLD);
         mvwprintw(g->window, 10, id_xoffset, "ID");
         mvwprintw(g->window, 10, p_xoffset, "P");
         mvwprintw(g->window, 10, g_xoffset, "G");
