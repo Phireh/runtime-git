@@ -42,6 +42,7 @@ GAME_UPDATE(game_update)
         g->inputn = 0;
         for (size_t i = 0; i < sizeof(g->inputfield); ++i)
             g->inputfield[i] = 0;
+        return;
         break;
     case 'n': // advance the simulation
         break;
