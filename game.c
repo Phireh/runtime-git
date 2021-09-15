@@ -161,7 +161,7 @@ GAME_RENDER(game_render)
     {
         wmove(g->window, 0, 0);
         //wprintw(g->window, "%s", g->board);
-        wattrset(g->window, A_BOLD);
+        //wattrset(g->window, A_BOLD);
         for (int i = 0; i < g->height; ++i)
         {
             for (int j = 0; j < g->width; ++j)
@@ -177,7 +177,7 @@ GAME_RENDER(game_render)
                 }
             }
         }
-        wattroff(g->window, A_BOLD);
+        //wattroff(g->window, A_BOLD);
     }
     else
     {
