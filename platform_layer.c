@@ -1,11 +1,13 @@
+#define _GNU_SOURCE
 #include <stdio.h>
-#include <dlfcn.h>
 #include <unistd.h>
 #include <limits.h>
 #include <errno.h>
 #include <time.h>
 #include <fcntl.h>
 #include <sys/wait.h>
+#include <link.h>
+#include <dlfcn.h>
 
 #include "common.h"
 
@@ -184,7 +186,7 @@ void *load_functions(game_code_t *code, char *filename)
         return NULL;
     }
     else
-    {
+    {        
         game_update_f *game_update = (game_update_f *) dlsym(library_handle, "game_update");
         char *error_string = dlerror();
         if (error_string)
@@ -268,17 +270,24 @@ int main()
     WINDOW *window_handler = newwin(h, w, 0, 0);
     game_state.window = window_handler;
     nodelay(window_handler, TRUE);
+    //wtimeout(window_handler, 16);
+    //wtimeout(stdscr, 16);
 
     // Activate special key capturing (backspace, delete, etc) 
-    keypad(window_handler, TRUE);    
+    keypad(window_handler, TRUE);
+    //keypad(stdscr, TRUE);
 
     // Reserve space for the game state
-    game_state.board = (uint8_t*) malloc(h*w*sizeof(uint8_t));
+    game_state.board = (uint8_t*) calloc(sizeof(uint8_t), h*w + 1);
+    game_state.aux_board = (uint8_t*) calloc(sizeof(uint8_t), h*w + 1);
     
     
     // Record dimensions
     game_state.height = h;
     game_state.width = w;
+
+    // Reset game state
+    game_code.game_reset(&game_state);
 
     // Initiate flags
     game_state.flags = NORMAL;
@@ -290,13 +299,16 @@ int main()
     for (;;)
     {
         // Fill debug info
-        snprintf(debuginfo, sizeof(debuginfo), "ADDRESS OF GAME_CODE: %p", game_code.game_render);
+        struct link_map *linkmap;        
+        dlinfo(game_handle, RTLD_DI_LINKMAP, &linkmap);
+        snprintf(debuginfo, sizeof(debuginfo), "CODE PATH: %s", linkmap->l_name);
+        
         
         // Check if user wants to load a different commit for the game runtime
         if (memcmp((const void *)&game_state.selected_oid, (const void *)&empty_oid, GIT_OID_RAWSZ))
         {
             // Copy entire commit tree to temp folder
-            char *tempdir = dump_git_tree("tempXXXXXX", game_state.game_oid, game_state.repo);
+            char *tempdir = dump_git_tree("tempXXXXXX", game_state.selected_oid, game_state.repo);
 
             int pid = fork();
 
@@ -343,27 +355,24 @@ int main()
             strcat(libpath, tempdir);
             strcat(libpath, "/game.so");
 
-            game_code.game_update = NULL;
-            game_code.game_reset = NULL;
-            game_code.game_render = NULL;
-            
             game_handle = load_functions(&game_code, libpath);
             if (!game_handle)
                 goto cleanup;
 
 
             // Re-render in case the rendering function has changed
-            game_code.game_render(&game_state);
+            //game_code.game_render(&game_state);
         }
         /* NOTE: wgetch does an implicit wrefresh() if the window was last modified since it was
            last called, so we can avoid calling wrefresh() at all by ourselves */
 
         int ch = wgetch(window_handler);
+        //int ch = getch();
         switch (ch)
         {
         case ERR:
-            usleep(1000*33);
-            game_code.game_render(&game_state);
+            usleep(16*1000);
+            //game_code.game_render(&game_state);
             break;
         case 'q':
             goto cleanup;

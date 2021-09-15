@@ -1,4 +1,4 @@
-CFLAGS=-Wall -Wextra -fPIC -fPIE -g
+CFLAGS=-Wall -Wextra -fPIC -fPIE -g -Og
 LIBS=-lncurses -ltinfo -ldl -lgit2
 
 all: game platform_layer

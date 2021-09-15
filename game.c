@@ -1,5 +1,36 @@
 #include "common.h"
 
+int count_neighbours(int x, int y, uint8_t *board, int width, int height)
+{
+    int count = 0;
+
+    if ((x-1 >= 0) && (y-1 >= 0) && (board[(y-1)*width+(x-1)] == 'X'))
+        ++count;
+
+    if ((y-1 >= 0) && (board[(y-1)*width+x] == 'X'))
+        ++count;
+
+    if ((x+1 < width) && (y-1 >= 0) && (board[(y-1)*width+(x+1)] == 'X'))
+        ++count;
+
+    if ((x-1 >= 0) && (board[y*width+(x-1)] == 'X'))
+        ++count;
+
+    if ((x+1 < width) && (board[y*width+(x+1)] == 'X'))
+        ++count;
+
+    if ((x-1 >= 0) && (y+1 < height) && (board[(y+1)*width+(x-1)] == 'X'))
+        ++count;
+
+    if ((y+1 < height) && (board[(y+1)*width] == 'X'))
+        ++count;
+
+    if ((x+1 < width) && (y+1 < height) && (board[(y+1)*width+(x+1)] == 'X'))
+        ++count;
+    
+    return count;
+}
+
 GAME_UPDATE(game_update)
 {
     /* Input handling */
@@ -13,6 +44,11 @@ GAME_UPDATE(game_update)
             g->inputfield[i] = 0;
         break;
     case 'n': // advance the simulation
+        break;
+
+    case 'd': // toggle debug
+        g->flags = g->flags & DEBUG_NEIGHBOURS ? g->flags & ~(DEBUG_NEIGHBOURS) : g->flags | DEBUG_NEIGHBOURS;
+        return;
         break;
 
     case '0':
@@ -77,8 +113,39 @@ GAME_UPDATE(game_update)
     
     if (g->flags & NORMAL)
     {
-        for (int i = 0; i < (g->height*g->width); ++i)
-            g->board[i] = i % 2 ? 0 : 1;
+        for (int i = 0; i < g->height; ++i)
+            for (int j = 0; j < g->width; ++j)
+            {
+                int neighbours = count_neighbours(j, i, g->board, g->width, g->height);
+                if (g->board[i*g->width+j] == 'X') // currently alive
+                {
+                    if (neighbours == 2 || neighbours == 3)
+                    {
+                        // Live
+                        g->aux_board[i*g->width+j] = 'X';
+                    }
+                    else
+                    {
+                        // Die
+                        g->aux_board[i*g->width+j] = ' ';
+                    }
+                }
+                else
+                {
+                    // Currently dead                    
+                    if (neighbours == 3)
+                    {
+                        // Live
+                        g->aux_board[i*g->width+j] = 'X';
+                    }
+                    else
+                    {
+                        // Die
+                        g->aux_board[i*g->width+j] = ' ';
+                    }
+                }
+            }
+        memcpy(g->board, g->aux_board, g->width*g->height);
     }
     else if (g->flags & GIT_MENU)
     {
@@ -89,20 +156,22 @@ GAME_UPDATE(game_update)
 GAME_RENDER(game_render)
 {
     wclear(g->window);
-            
     if (g->flags & NORMAL)
     {
+        wmove(g->window, 0, 0);
+        //wprintw(g->window, "%s", g->board);
         for (int i = 0; i < g->height; ++i)
         {
             for (int j = 0; j < g->width; ++j)
             {
-                if (g->board[i*g->width+j])
+                if (g->flags & DEBUG_NEIGHBOURS)
                 {
-                    mvwprintw(g->window, i, j, "X");
+                    int neighbours = count_neighbours(j, i, g->board, g->width, g->height);
+                    wprintw(g->window, "%d", neighbours);
                 }
                 else
                 {
-                    mvwprintw(g->window, i, j, " ");
+                    wprintw(g->window, "%c", g->board[i*g->width+j]);
                 }
             }
         }
@@ -189,7 +258,13 @@ GAME_RENDER(game_render)
 
 GAME_RESET(game_reset)
 {
-    for (int i = 0; i < (g->height*g->width); ++i)
-        g->board[i] = 0;
-}
+    int i;
+    for (i = 0; i < (g->height*g->width); ++i)
+        g->board[i] = ((double)rand() / RAND_MAX) > 0.8 ? 'X' : ' ';
 
+    for (i = 0; i < (g->height*g->width); ++i)
+        g->aux_board[i] = ' ';
+
+    g->board[i] = '\0';
+    g->aux_board[i] = '\0';
+}

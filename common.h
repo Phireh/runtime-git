@@ -8,10 +8,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 typedef enum {
     NORMAL =   (1 << 0),
     GIT_MENU = (1 << 1),
+    DEBUG_NEIGHBOURS = (1 << 2)
 } game_flags_t;
 
 /* Our own commit representation for comfier displaying. The only info we really
@@ -37,6 +37,8 @@ typedef struct {
     int32_t width;
     game_flags_t flags;    
     uint8_t *board;
+    uint8_t *aux_board;
+    
     WINDOW *window;
     char *debuginfo;
 
